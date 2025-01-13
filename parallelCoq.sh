@@ -2,7 +2,7 @@
 
 export NB_PROC=$(nproc)
 TARGET_FILE=$1
-RW_FOLDER=/scratch
+RW_FOLDER=/tmp
 
 # Copy hol-light and hol2dk to a RW folder
 cp -r $HOL2DK_DIR $RW_FOLDER/hol2dk
