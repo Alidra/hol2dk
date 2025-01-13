@@ -326,3 +326,29 @@ clean-vtodo: vtodo
 .PHONY: lpsize
 lpsize:
 	find . -maxdepth 1 -name '*.lp' -print0 | du --files0-from=- --total -s -h | tail -1
+
+LIST_OF_NODES := $(shell if test -f LIST_OF_NODES; then cat LIST_OF_NODES; fi)
+
+.PHONY: spec_abbrevs.v
+spec_abbrevs.v: $(LIST_OF_NODES:%=%.done)
+	@echo list of nodes is
+	cat LIST_OF_NODES
+
+
+%.done:
+	@echo Hello from master node. Going to node $@
+	srun --exclusive --nodelist $@ make_spec_abbrevs_sharedFolder.sh
+# 	ssh $@
+# 	./make_spec_abbrevs_sharedFolder.sh "$(cat SPEC_ABBREVS_FILES.$@)"
+	touch $@.done
+
+.PHONY: spec_abbrevs_vo
+# This entry is executed by each slave node 
+# where the SPEC_ABBREVS_FILES was exported by the make_specc_abbrevs_sharedFolder.sh script
+	spec_abbrevs_vo: $(SPEC_ABBREVS_FILES:%.v=%.vo)
+
+%_spec.v:
+	scp $(MASTER):$(RW_FOLDER)/$@ .
+
+%_abbrevs%.v:
+	scp $(MASTER):$(RW_FOLDER)/$@ .
