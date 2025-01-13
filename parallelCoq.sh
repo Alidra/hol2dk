@@ -14,7 +14,7 @@ cd $HOLLIGHT_DIR
 hol2dk dump-simp-before-hol $TARGET_FILE
 mkdir -p $RW_FOLDER/output
 cd $RW_FOLDER/output
-hol2dk link $TARGET_FILE HOLLight_Real.HOLLight_Real --root-path $HOL2DK_DIR/HOLLight.v Rdefinitions Rbasic_fun Raxioms
+hol2dk config $TARGET_FILE HOLLight Rdefinitions Rbasic_fun Raxioms HOLLight_Real.HOLLight_Real $(HOL2DK_DIR)/HOLLight.v
 time make split # 2>&1 | tee log_split_$TARGET_FILE.txt
 time make -j250 lp # 2>&1 | tee log_lp_$TARGET_FILE.txt
 time make -j250 v # 2>&1 | tee log_v_$TARGET_FILE.txt
