@@ -1,23 +1,23 @@
 #!/bin/bash
 
-NB_PROC=echo $(nproc)
+export NB_PROC=$(nproc)
 TARGET_FILE=$1
-RW_FOLDER=/tmp
+RW_FOLDER=/scratch
 
-# # Copy hol-light and hol2dk to a RW folder
-# cp -r $HOL2DK_DIR $RW_FOLDER/hol2dk
-# cp -r $HOLLIGHT_DIR $RW_FOLDER/hol-light
-# export HOL2DK_DIR=$RW_FOLDER/hol2dk
-# export HOLLIGHT_DIR=$RW_FOLDER/hol-light
+# Copy hol-light and hol2dk to a RW folder
+cp -r $HOL2DK_DIR $RW_FOLDER/hol2dk
+cp -r $HOLLIGHT_DIR $RW_FOLDER/hol-light
+export HOL2DK_DIR=$RW_FOLDER/hol2dk
+export HOLLIGHT_DIR=$RW_FOLDER/hol-light
 
-# cd $HOLLIGHT_DIR
-# hol2dk dump-simp-before-hol $TARGET_FILE
-# mkdir -p $RW_FOLDER/output
-# cd $RW_FOLDER/output
-# hol2dk link $TARGET_FILE HOLLight_Real.HOLLight_Real --root-path $HOL2DK_DIR/HOLLight.v Rdefinitions Rbasic_fun Raxioms
-# time make split # 2>&1 | tee log_split_$TARGET_FILE.txt
-# time make -j250 lp # 2>&1 | tee log_lp_$TARGET_FILE.txt
-# time make -j250 v # 2>&1 | tee log_v_$TARGET_FILE.txt
+cd $HOLLIGHT_DIR
+hol2dk dump-simp-before-hol $TARGET_FILE
+mkdir -p $RW_FOLDER/output
+cd $RW_FOLDER/output
+hol2dk link $TARGET_FILE HOLLight_Real.HOLLight_Real --root-path $HOL2DK_DIR/HOLLight.v Rdefinitions Rbasic_fun Raxioms
+time make split # 2>&1 | tee log_split_$TARGET_FILE.txt
+time make -j250 lp # 2>&1 | tee log_lp_$TARGET_FILE.txt
+time make -j250 v # 2>&1 | tee log_v_$TARGET_FILE.txt
 
 #####################################################@@
 

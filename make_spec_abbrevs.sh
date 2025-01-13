@@ -4,7 +4,7 @@ MASTER_NODE=$1
 LIST_OF_FILES=$2
 
 NB_PROC=echo $(nproc)
-RW_FOLDER=/tmp
+RW_FOLDER=/scratch
 # Copy hol-light and hol2dk to a RW folder
 cp -r $HOL2DK_DIR $RW_FOLDER/hol2dk
 cp -r $HOLLIGHT_DIR $RW_FOLDER/hol-light

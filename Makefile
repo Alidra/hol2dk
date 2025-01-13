@@ -336,13 +336,19 @@ spec_abbrevs.v: $(LIST_OF_NODES:%=%.done)
 
 %.done:
 	@echo Hello from master node. Going to node $@
-# sbatch --nodelist LIST_OF_NODES{%} ~/singularity.sh 
+	srun --exclusive --nodelist $@ make_spec_abbrevs_sharedFolder.sh
 # 	ssh $@
 # 	./make_spec_abbrevs_sharedFolder.sh "$(cat SPEC_ABBREVS_FILES.$@)"
-# 	touch $@.done
+	touch $@.done
 
 .PHONY: spec_abbrevs_vo
 # This entry is executed by each slave node 
 # where the SPEC_ABBREVS_FILES was exported by the make_specc_abbrevs_sharedFolder.sh script
 	spec_abbrevs_vo: $(SPEC_ABBREVS_FILES:%.v=%.vo)
+
+%_spec.v:
+	scp $(MASTER):$(RW_FOLDER)/$@ .
+
+%_abbrevs%.v:
+	scp $(MASTER):$(RW_FOLDER)/$@ .
 	
