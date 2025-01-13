@@ -3,8 +3,7 @@
 BASE := $(shell if test -f BASE; then cat BASE; fi)
 ROOT_PATH := $(shell if test -f ROOT_PATH; then cat ROOT_PATH; else echo HOLLight; fi)
 ERASING := $(shell if test -f ERASING; then cat ERASING; fi)
-REQUIRING := $(shell if test -f REQUIRING; then cat REQUIRING; fi)
-VOFILES := $(shell if test -f VOFILES; then cat VOFILES; fi)
+REQUIRING := $(shell if test -f REQUIRING; then cat REQUIRING; else echo $(ROOT_PATH); fi)
 
 MAX_PROOF = 500_000
 MAX_ABBREV = 2_000_000
@@ -138,7 +137,6 @@ lp-abbrevs: $(MIN_FILES:%.min=%.lp)
 
 .PHONY: clean-lp
 clean-lp: rm-lp rm-lpo-mk rm-mk rm-min rm-max rm-idx rm-brv rm-brp rm-typ rm-sed rm-lpo rm-siz clean-lpo clean-v
-	rm -f lpo.mk
 
 .PHONY: rm-lp
 rm-lp:
@@ -224,18 +222,16 @@ endif
 
 .PHONY: clean-v
 clean-v: rm-v clean-vo
-	rm -f vo.mk
 
 .PHONY: rm-v
 rm-v:
-	find . -maxdepth 1 -name '*.v' -a -type f -delete
+	find . -maxdepth 1 -name '*.v' -a ! -name $(ROOT_PATH).v -delete
 
 ifeq ($(INCLUDE_VO_MK),1)
 include vo.mk
 
 vo.mk: lpo.mk
-	cp deps.mk $@
-	sed -e 's/\.lp/.v/g' -e "s/^theory_hol.vo:/theory_hol.vo: $(VOFILES) /" lpo.mk >> $@
+	sed -e 's/\.lp/.v/g' -e "s/: theory_hol.vo/: $(ROOT_PATH).vo theory_hol.vo/" -e "s/theory_hol.vo:/theory_hol.vo: $(ROOT_PATH).vo/" lpo.mk > $@
 endif
 
 .PHONY: dep
@@ -313,7 +309,6 @@ vtodo:
 	find . -name '*.v' | sort > /tmp/vfiles
 	find . -name '*.vo' | sed -e 's/\.vo$$/.v/' | sort > /tmp/vofiles
 	diff /tmp/vofiles /tmp/vfiles | sed -e '/^[^>]/d' -e 's/^> .\///' > vtodo
-	@export v=`wc -l vtodo | sed -e 's/ vtodo//'`; export n=`find . -name \*.v | wc -l`; echo remains $$v/$$n=`expr $${v}00 / $$n`\% 
 
 .PHONY: lptodo
 lptodo: vtodo
@@ -330,3 +325,24 @@ clean-vtodo: vtodo
 .PHONY: lpsize
 lpsize:
 	find . -maxdepth 1 -name '*.lp' -print0 | du --files0-from=- --total -s -h | tail -1
+
+LIST_OF_NODES := $(shell if test -f LIST_OF_NODES; then cat LIST_OF_NODES; fi)
+
+.PHONY: spec_abbrevs.v
+spec_abbrevs.v: $(LIST_OF_NODES:%=%.done)
+	@echo list of nodes is
+	cat LIST_OF_NODES
+
+
+%.done:
+	@echo Hello from master node. Going to node $@
+# sbatch --nodelist LIST_OF_NODES{%} ~/singularity.sh 
+# 	ssh $@
+# 	./make_spec_abbrevs_sharedFolder.sh "$(cat SPEC_ABBREVS_FILES.$@)"
+# 	touch $@.done
+
+.PHONY: spec_abbrevs_vo
+# This entry is executed by each slave node 
+# where the SPEC_ABBREVS_FILES was exported by the make_specc_abbrevs_sharedFolder.sh script
+	spec_abbrevs_vo: $(SPEC_ABBREVS_FILES:%.v=%.vo)
+	
