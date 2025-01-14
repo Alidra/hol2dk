@@ -1,8 +1,8 @@
 #!/bin/bash
 
 export NB_PROC=$(nproc)
-TARGET_FILE=$1
-RW_FOLDER=/tmp
+export TARGET_FILE=$1
+export RW_FOLDER=/tmp
 
 # Copy hol-light and hol2dk to a RW folder
 cp -r $HOL2DK_DIR $RW_FOLDER/hol2dk
@@ -26,7 +26,7 @@ cd $RW_FOLDER/output
 LIST_OF_NODES=("marg001" "marg002")
 echo ${LIST_OF_NODES[@]} > LIST_OF_NODES
 
-SPEC_ABBREVS_FILES=$(find $PWD/output -type f \( -name '*_spec.v' -o -name '*_term_abbrevs*.v' \))
+SPEC_ABBREVS_FILES=$(find $RW_FOLDER/output -type f \( -name '*_spec.v' -o -name '*_term_abbrevs*.v' \))
 string=${SPEC_ABBREVS_FILES[@]}
 string=$(echo "$string" | tr ' ' '\n' | sort | tr '\n' ' ')
 IFS=' ' read -ra SPEC_ABBREVS_FILES <<< $string
@@ -86,9 +86,4 @@ do
         last=$(expr $first + $m)
     fi
 done
-make spec_abbrevs.v
-
-
-# list=("img_1.jpg" "img_2.jpg")
-# echo $(IFS=' testMakeParal/' ; echo "${list[*]}")
-# cp $(IFS=' testMakeParal/' ; echo "${list[*]}") ..
+make -f Makefile.dist spec_abbrevs.v
