@@ -1,4 +1,11 @@
 #!/bin/bash
+# Launch this script with folowing args :
+# $1 the script to be launched inside the singularity container
+# $2 the R/W folder where results will be written
+
+# script launched inside Singularity container needs two more arguments :
+# target_file : the folder to generate import libraires from (ex. hol.ml)
+
 set -eu
 scriptName="$1"
 # Nom de l'instance
@@ -22,7 +29,7 @@ if ! singularity instance list | grep -q "$INSTANCE_NAME"; then
     else
 	echo "$HOME/$SIF_FILE already exists locally. skipping pull"
     fi
-    singularity instance start -B ~/hol-light:/tmp/hol-light -B ~/hol2dk:/home/opam/hol2dk -B $PWD:/tmp "$HOME/$SIF_FILE" "$INSTANCE_NAME"
+    singularity instance start -B ~/hol2dk:/home/opam/hol2dk -B $PWD:/tmp "$HOME/$SIF_FILE" "$INSTANCE_NAME"
 else
     # Si l'instance existe déjà, ne rien faire
     echo "L'instance '$INSTANCE_NAME' existe déjà."
@@ -30,4 +37,4 @@ fi
 
 echo starting script $scriptName with file 
 
-singularity exec --no-home instance://"$INSTANCE_NAME" $scriptName
+singularity exec --no-home --env RW_FOLDER=/tmp --env OUTPUT_FOLDER_NAME=output instance://"$INSTANCE_NAME" $scriptName

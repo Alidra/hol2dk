@@ -2,7 +2,7 @@
 
 export NB_PROC=$(nproc)
 export TARGET_FILE=$1
-export RW_FOLDER=/tmp
+# export RW_FOLDER=/tmp
 
 # Copy hol-light and hol2dk to a RW folder
 cp -r $HOL2DK_DIR $RW_FOLDER/hol2dk
@@ -10,23 +10,25 @@ cp -r $HOLLIGHT_DIR $RW_FOLDER/hol-light
 export HOL2DK_DIR=$RW_FOLDER/hol2dk
 export HOLLIGHT_DIR=$RW_FOLDER/hol-light
 
+cp $HOL2DK_DIR/hol_lib_upto_arith.ml $HOL2DK_DIR/hol_upto_arith.ml $HOLLIGHT_DIR
+
 cd $HOLLIGHT_DIR
 hol2dk dump-simp-before-hol $TARGET_FILE
-mkdir -p $RW_FOLDER/output
-cd $RW_FOLDER/output
-hol2dk config $TARGET_FILE HOLLight Rdefinitions Rbasic_fun Raxioms HOLLight_Real.HOLLight_Real $(HOL2DK_DIR)/HOLLight.v
+mkdir -p $RW_FOLDER/$OUTPUT_FOLDER_NAME
+cd $RW_FOLDER/$OUTPUT_FOLDER_NAME
+hol2dk config $TARGET_FILE HOLLight Rdefinitions Rbasic_fun Raxioms HOLLight_Real.HOLLight_Real $HOL2DK_DIR/HOLLight.v
 time make split # 2>&1 | tee log_split_$TARGET_FILE.txt
-time make -j250 lp # 2>&1 | tee log_lp_$TARGET_FILE.txt
-time make -j250 v # 2>&1 | tee log_v_$TARGET_FILE.txt
+time make -j$NB_PROC lp # 2>&1 | tee log_lp_$TARGET_FILE.txt
+time make -j$NB_PROC v # 2>&1 | tee log_v_$TARGET_FILE.txt
 
 #####################################################@@ 
 
-cd $RW_FOLDER/output
+cd $RW_FOLDER/$OUTPUT_FOLDER_NAME
 
 LIST_OF_NODES=("marg001" "marg002")
 echo ${LIST_OF_NODES[@]} > LIST_OF_NODES
 
-SPEC_ABBREVS_FILES=$(find $RW_FOLDER/output -type f \( -name '*_spec.v' -o -name '*_term_abbrevs*.v' \))
+SPEC_ABBREVS_FILES=$(find $RW_FOLDER/$OUTPUT_FOLDER_NAME -type f \( -name '*_spec.v' -o -name '*_term_abbrevs*.v' \))
 string=${SPEC_ABBREVS_FILES[@]}
 string=$(echo "$string" | tr ' ' '\n' | sort | tr '\n' ' ')
 IFS=' ' read -ra SPEC_ABBREVS_FILES <<< $string
