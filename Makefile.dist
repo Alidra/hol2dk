@@ -1,11 +1,13 @@
 include Makefile
 
-LIST_OF_NODES := $(shell if test -f LIST_OF_NODES; then cat LIST_OF_NODES; fi)
+.SUFFIXES:
+
+LIST_OF_NODES := $(shell if test -f $(RW_FOLDER)/output/LIST_OF_NODES; then cat $(RW_FOLDER)/output/LIST_OF_NODES; fi)
 
 .PHONY: spec_abbrevs.v
 spec_abbrevs.v: $(LIST_OF_NODES:%=%.done)
         @echo list of nodes is
-        cat LIST_OF_NODES
+        cat $(LIST_OF_NODES)
 
 
 %.done:
