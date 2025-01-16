@@ -35,6 +35,6 @@ else
     echo "L'instance '$INSTANCE_NAME' existe déjà."
 fi
 
-echo starting script $scriptName with file 
+echo starting script $scriptName. Results will be in $TARGET_DIR/output
 
-singularity exec --no-home --env RW_FOLDER=/tmp --env OUTPUT_FOLDER_NAME=output instance://"$INSTANCE_NAME" $scriptName
+singularity exec --no-home --env RW_FOLDER=/tmp --env MARGARET_HOME=$HOME --env OUTPUT_FOLDER_NAME=output instance://"$INSTANCE_NAME" $scriptName

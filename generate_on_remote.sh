@@ -1,4 +1,6 @@
 #!/bin/bash
 
-listOfFiles=$1
-/home/deducteam/aalidra/hol2dk/singularity.sh "/home/deducteam/aalidra/hol2dk/make_spec_abbrevs_sharedFolder.sh $listOfFiles" /scratch/abdelghani
+export MARGARET_HOME=$1
+export listOfFiles=$2
+echo in generate on remote liste of file is : $listOfFiles
+$MARGARET_HOME/hol2dk/singularity.v1.sh "$MARGARET_HOME/hol2dk/make_spec_abbrevs_sharedFolder.sh $listOfFiles" /scratch/abdelghani

@@ -1,12 +1,12 @@
 #!/bin/bash
 
 export NB_PROC=$(nproc)
-export TARGET_FILE=$1
+export TARGET_FILE=$1 #hol_upto_arith.ml
 # export RW_FOLDER=/tmp
 
 # Copy hol-light and hol2dk to a RW folder
-cp -r $HOL2DK_DIR $RW_FOLDER/hol2dk
-cp -r $HOLLIGHT_DIR $RW_FOLDER/hol-light
+cp -rf $HOL2DK_DIR $RW_FOLDER/hol2dk
+cp -rf $HOLLIGHT_DIR $RW_FOLDER/hol-light
 export HOL2DK_DIR=$RW_FOLDER/hol2dk
 export HOLLIGHT_DIR=$RW_FOLDER/hol-light
 
@@ -16,7 +16,8 @@ cd $HOLLIGHT_DIR
 hol2dk dump-simp-before-hol $TARGET_FILE
 mkdir -p $RW_FOLDER/$OUTPUT_FOLDER_NAME
 cd $RW_FOLDER/$OUTPUT_FOLDER_NAME
-hol2dk config $TARGET_FILE HOLLight Rdefinitions Rbasic_fun Raxioms HOLLight_Real.HOLLight_Real $HOL2DK_DIR/HOLLight.v
+hol2dk link $TARGET_FILE HOLLight_Real.HOLLight_Real --root-path $HOL2DK_DIR/HOLLight.v Rdefinitions Rbasic_fun Raxioms
+# hol2dk config $TARGET_FILE HOLLight Rdefinitions Rbasic_fun Raxioms HOLLight_Real.HOLLight_Real $HOL2DK_DIR/HOLLight.v
 time make split # 2>&1 | tee log_split_$TARGET_FILE.txt
 time make -j$NB_PROC lp # 2>&1 | tee log_lp_$TARGET_FILE.txt
 time make -j$NB_PROC v # 2>&1 | tee log_v_$TARGET_FILE.txt
@@ -25,7 +26,7 @@ time make -j$NB_PROC v # 2>&1 | tee log_v_$TARGET_FILE.txt
 
 cd $RW_FOLDER/$OUTPUT_FOLDER_NAME
 
-LIST_OF_NODES=("marg001" "marg002")
+LIST_OF_NODES=("004")
 echo ${LIST_OF_NODES[@]} > LIST_OF_NODES
 
 SPEC_ABBREVS_FILES=$(find $RW_FOLDER/$OUTPUT_FOLDER_NAME -type f \( -name '*_spec.v' -o -name '*_term_abbrevs*.v' \))
@@ -39,10 +40,7 @@ n=$NBRE_OF_SPEC_ABBREVS_FILES
 m=$(expr $n / $NBRE_OF_NODES)
 
 echo number of elements in SPEC_ABBREVS_FILES is $n
-Echo the elementz in the list are :
-for elem in "${SPEC_ABBREVS_FILES[@]}"; do
-    echo "$elem"
-done
+
 echo number of nodes is $NBRE_OF_NODES
 echo number of elements in sublists is $m
 first=0
@@ -77,8 +75,13 @@ do
     # echo after progressing, first indice is $first and Last indice is $last
     # echo  $firstPartLast is different from $firstPartLastPlus1 or last element of the list reached : n=$n
 
-    echo Elements between $first and $last are :
-    echo "${SPEC_ABBREVS_FILES[@]:first:$(expr $last - $first + 1)}" | tee SPEC_ABBREVS_FILES.${LIST_OF_NODES[$(expr $i - 1)]}.done
+    # echo Elements between $first and $last are :
+    listOfFiles="${SPEC_ABBREVS_FILES[@]:first:$(expr $last - $first + 1)}"
+    string=$(echo "$listOfFiles" | tr ' ' '\n')
+    echo l=$(echo string | wc -c)
+    echo $listOfFiles > SPEC_ABBREVS_FILES.marg${LIST_OF_NODES[$(expr $i - 1)]}
+    echo node $i will process
+    echo $l
     
     first=$(expr $last + 1)
     # If last node, assign all left files to it
@@ -88,4 +91,10 @@ do
         last=$(expr $first + $m)
     fi
 done
-make -f Makefile.dist spec_abbrevs.v
+ln $HOL2DK_DIR/distributed.mk distributed.mk
+
+# make -j$NBRE_OF_NODES -f distributed.mk spec_abbrevs.v
+
+# echo ******************* spec and abbrevs done
+echo **************************Now doing other v files
+echo *******************************Uncomment this :

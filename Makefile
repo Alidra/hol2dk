@@ -255,6 +255,8 @@ endif
 COQC_OPTIONS = -no-glob # -w -coercions
 %.vo: %.v
 	@echo coqc $<
+	@pwd
+	@ls *.vo
 	@coqc $(COQC_OPTIONS) -R . $(ROOT_PATH) $<
 
 .PHONY: clean-vo
