@@ -19,5 +19,4 @@ cd $RW_FOLDER/$OUTPUT_FOLDER_NAME
 export SPEC_ABBREVS_FILES=${LIST_OF_FILES[@]}
 # echo list of files : ${LIST_OF_FILES[@]}
 # echo list of spec files : $SPEC_ABBREVS_FILES
-echo going to make distributed.mk spec_abbrevs_vo
-make -j$NB_PROC -f distributed.mk spec_abbrevs_vo
+make -j$NB_PROC vo # -f distributed.mk spec_abbrevs_vo

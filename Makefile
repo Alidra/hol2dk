@@ -254,10 +254,15 @@ endif
 
 COQC_OPTIONS = -no-glob # -w -coercions
 %.vo: %.v
-	@echo coqc $<
+	@echo This is host 
+	@hostname
+	@echo Current folder is
 	@pwd
-	@ls *.vo
+	@echo coqc $<
+	sleep 1
 	@coqc $(COQC_OPTIONS) -R . $(ROOT_PATH) $<
+	@echo currently vo files are :
+	@ls *.vo
 
 .PHONY: clean-vo
 clean-vo: rm-vo rm-glob rm-aux rm-cache
