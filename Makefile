@@ -23,6 +23,10 @@ help:
 	@echo "  MAX_ABBREV: hol2dk max abbrev size (default is $(MAX_ABBREV))"
 	@echo "  EXTRA_ROCQ_OPTIONS: additional options for rocq compile (empty by default)"
 
+.PHONY: tvs
+tvs:
+	hol2dk tvs $(BASE)
+
 .PHONY: split
 split:
 	hol2dk split $(BASE)
@@ -161,7 +165,7 @@ lp-abbrevs: $(MIN_FILES:%.min=%.lp)
 	$(HOL2DK) abbrev $(BASE) $*.lp
 
 .PHONY: clean-lp
-clean-lp: rm-lp rm-lpo-mk rm-mk rm-min rm-max rm-idx rm-brv rm-brp rm-typ rm-sed rm-lpo rm-siz rm-rename-abbrevs clean-lpo clean-v
+clean-lp: rm-lp rm-lpo-mk rm-mk rm-min rm-max rm-idx rm-brv rm-brp rm-typ rm-sed rm-lpo rm-siz rm-rename-abbrevs rm-tvs clean-lpo clean-v
 	-rm -f lpo.mk
 
 .PHONY: rm-lp
@@ -207,6 +211,10 @@ rm-sed:
 .PHONY: rm-siz
 rm-siz:
 	-find . -maxdepth 1 -name '*.siz' -delete
+
+.PHONY: rm-tvs
+rm-tvs:
+	find . -maxdepth 1 -name '*.tvs' -delete
 
 ifeq ($(INCLUDE_LPO_MK),1)
 include lpo.mk
