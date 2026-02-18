@@ -77,28 +77,28 @@ jobs:
           eval `opam env`
           export HOL2DK_DIR=`pwd`
           export HOLLIGHT_DIR=`pwd`/hol-light
-          make -f test.mk test1
+          make -f test.mk do-test1
       - name: Test single-threaded lp output
         run: |
           eval `opam env`
           export HOL2DK_DIR=`pwd`
           export HOLLIGHT_DIR=`pwd`/hol-light
-          make -f test.mk test2
+          make -f test.mk do-test2
       - name: Test multi-threaded dk output with mk
         run: |
           eval `opam env`
           export HOL2DK_DIR=`pwd`
           export HOLLIGHT_DIR=`pwd`/hol-light
-          make -j3 -f test.mk test3
+          make -j3 -f test.mk do-test3
       - name: Test multi-threaded lp output with mk
         run: |
           eval `opam env`
           export HOL2DK_DIR=`pwd`
           export HOLLIGHT_DIR=`pwd`/hol-light
-          make -j3 -f test.mk test4
+          make -j3 -f test.mk do-test4
       - name: Test multi-threaded lp output with split
         run: |
           eval `opam env`
           export HOL2DK_DIR=`pwd`
           export HOLLIGHT_DIR=`pwd`/hol-light
-          make -j3 -f test.mk test5
+          make -j3 -f test.mk do-test5
