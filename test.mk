@@ -12,7 +12,7 @@ output%:
 	mkdir -p output$*
 
 clean:
-	-rm -rf output1 output2 output3 output4 output5
+	-rm -rf $(TESTS:test%=output%)
 
 .PHONY: config
 config:
